@@ -6,6 +6,7 @@
  */
 package net.maizegenetics.analysis.data;
 
+import net.maizegenetics.dna.map.PositionListIOUtils;
 import net.maizegenetics.dna.snp.FilterList;
 import net.maizegenetics.dna.snp.ExportUtils;
 import net.maizegenetics.dna.snp.GenotypeTable;
@@ -456,6 +457,15 @@ public class ExportPlugin extends AbstractPlugin {
     public String performFunctionForPositionList(PositionList input) {
 
         if (isInteractive()) {
+            ExportPositionListDialog theDialog = new ExportPositionListDialog();
+            theDialog.setLocationRelativeTo(getParentFrame());
+            theDialog.setVisible(true);
+            if (theDialog.isCancel()) {
+                return null;
+            }
+            myFileType = theDialog.getTasselFileType();
+            //selection = theDialog.getSelection();
+            theDialog.dispose();
             setSaveFile(getFileByChooser());
         }
 
@@ -465,8 +475,15 @@ public class ExportPlugin extends AbstractPlugin {
 
         String filename = "";
         try {
-            filename = JSONUtils.exportPositionListToJSON(input, mySaveFile);
-            return new File(filename).getCanonicalPath();
+            if(myFileType == FileLoadPlugin.TasselFileType.PositionList) {
+                filename = JSONUtils.exportPositionListToJSON(input, mySaveFile);
+                return new File(filename).getCanonicalPath();
+            }
+            else {
+                //Handle Position list to tab-delimited values
+                PositionListIOUtils.exportTabDelimPosList(input,mySaveFile);
+                return new File(filename).getCanonicalPath();
+            }
         } catch (Exception e) {
             myLogger.debug(e.getMessage(), e);
             throw new IllegalStateException("ExportPlugin: performFunctionForPositionList: Problem writing file: " + filename);
@@ -1121,6 +1138,149 @@ class ExportSquareMatrixDialog extends JDialog {
         if (myBinMultiBlupButton.isSelected()) {
             return 2;
         }
+        return -1;
+    }
+
+    private void okButton_actionPerformed(ActionEvent e) {
+        myIsCancel = false;
+        setVisible(false);
+    }
+
+    private void cancelButton_actionPerformed(ActionEvent e) {
+        myIsCancel = true;
+        setVisible(false);
+    }
+
+    public boolean isCancel() {
+        return myIsCancel;
+    }
+}
+
+class ExportPositionListDialog extends JDialog {
+
+    private boolean myIsCancel = true;
+    private ButtonGroup myButtonGroup = new ButtonGroup();
+    private JRadioButton myJSONButton = new JRadioButton("Write PositionList In JSON");
+    private JRadioButton myTSVButton = new JRadioButton("Write PositionList In Tab-Delimited");
+
+    public ExportPositionListDialog() {
+        super((Frame) null, "Export...", true);
+        try {
+            jbInit();
+            pack();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void jbInit() throws Exception {
+
+        setTitle("Export...");
+        setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        setUndecorated(false);
+        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+        Container contentPane = getContentPane();
+        BoxLayout layout = new BoxLayout(contentPane, BoxLayout.Y_AXIS);
+        contentPane.setLayout(layout);
+        JPanel main = getMain();
+        contentPane.add(main);
+        pack();
+        setResizable(false);
+
+        myButtonGroup.add(myJSONButton);
+        myButtonGroup.add(myTSVButton);
+
+        myJSONButton.setSelected(true);
+
+    }
+
+    private JPanel getMain() {
+        JPanel inputs = new JPanel();
+        inputs.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        BoxLayout layout = new BoxLayout(inputs, BoxLayout.Y_AXIS);
+        inputs.setLayout(layout);
+        inputs.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+        inputs.add(Box.createRigidArea(new Dimension(1, 10)));
+        inputs.add(getLabel());
+        inputs.add(Box.createRigidArea(new Dimension(1, 10)));
+        inputs.add(getFileTypePanel());
+        inputs.add(Box.createRigidArea(new Dimension(1, 10)));
+        inputs.add(getButtons());
+        inputs.add(Box.createRigidArea(new Dimension(1, 10)));
+        return inputs;
+    }
+
+    private JPanel getLabel() {
+        JPanel result = new JPanel();
+        BoxLayout layout = new BoxLayout(result, BoxLayout.Y_AXIS);
+        result.setLayout(layout);
+        result.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+        JLabel jLabel1 = new JLabel("Choose File Type to Export.");
+        jLabel1.setFont(new Font("Dialog", Font.BOLD, 18));
+        result.add(jLabel1);
+        return result;
+    }
+
+    private JPanel getFileTypePanel() {
+        JPanel result = new JPanel();
+        BoxLayout layout = new BoxLayout(result, BoxLayout.Y_AXIS);
+        result.setLayout(layout);
+        result.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+        result.setBorder(BorderFactory.createEtchedBorder());
+
+        result.add(Box.createRigidArea(new Dimension(1, 10)));
+        result.add(myJSONButton);
+        result.add(myTSVButton);
+
+        return result;
+    }
+
+    private JPanel getButtons() {
+
+        JButton okButton = new JButton();
+        JButton cancelButton = new JButton();
+
+        cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cancelButton_actionPerformed(e);
+            }
+        });
+
+        okButton.setText("OK");
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                okButton_actionPerformed(e);
+            }
+        });
+
+        JPanel result = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+        result.add(okButton);
+
+        result.add(cancelButton);
+
+        return result;
+
+    }
+
+    public FileLoadPlugin.TasselFileType getTasselFileType() {
+        if (myJSONButton.isSelected()) {
+            return FileLoadPlugin.TasselFileType.PositionList;
+        } else if (myTSVButton.isSelected()) {
+            return FileLoadPlugin.TasselFileType.PositionListTSV;
+        }
+        return FileLoadPlugin.TasselFileType.PositionList;
+    }
+
+    public int getSelection() {
+        if (myJSONButton.isSelected()) {
+            return 0;
+        }
+        if (myTSVButton.isSelected()) {
+            return 1;
+        }
+
         return -1;
     }
 

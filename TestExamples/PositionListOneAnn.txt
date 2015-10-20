@@ -9,7 +9,7 @@
             "position":157104,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/C”
+                "VARIANT":"A/C"
             }
         },
         {

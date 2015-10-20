@@ -9,9 +9,9 @@
             "position":157104,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/C”,
-		“NumReads”:123,
-		“Score”:1.2
+                "VARIANT":"A/C",
+		"NumReads":123,
+		"Score":1.2
             }
         },
         {

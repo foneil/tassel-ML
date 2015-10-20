@@ -4,12 +4,24 @@
 package net.maizegenetics.dna.map;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.SetMultimap;
+import net.maizegenetics.util.GeneralAnnotation;
 import net.maizegenetics.util.Utils;
 
 /**
  * Utilities for reading and writing Position Lists
  *
  * @author lcj34
+ * @author zrm22
  *
  */
 public class PositionListIOUtils {
@@ -90,6 +102,63 @@ public class PositionListIOUtils {
             e.printStackTrace();
         }
         return null;   	
+    }
+    //Method to convert a positionList with annotations to a table form and export it to the file
+    public static void exportTabDelimPosList(PositionList posList, String fileName) {
+        HashMap<String,Integer> globalKeyIndexMap = new HashMap<String,Integer>();
+        //Get each Annotation and keep track of each key
+        for(Position pos : posList) {
+            GeneralAnnotation annos = pos.getAnnotation();
+            Set<String> annoKeys = annos.getAnnotationKeys();
+            for(String key : annoKeys) {
+                if(!globalKeyIndexMap.keySet().contains(key)) {
+                    globalKeyIndexMap.put(key, globalKeyIndexMap.size());
+                }
+            }
+        }
+
+        //Loop through the positions once again to convert the positions to tab format and write to file
+        try {
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(fileName));
+            //Write out the headers in the form
+            //chr   pos     strand  anno1   anno2   anno3
+            fileOut.write("chr\tpos\tstrand\t");
+            String[] annotationBuffer = new String[globalKeyIndexMap.size()];
+            Set<String> annoNames = globalKeyIndexMap.keySet();
+            for(String name : annoNames) {
+                int keyIndex = globalKeyIndexMap.get(name);
+                annotationBuffer[keyIndex] = name;
+            }
+            fileOut.write(Arrays.stream(annotationBuffer).collect(Collectors.joining("\t")));
+            fileOut.newLine();
+
+            for (Position pos : posList) {
+                //Use a buffer to hold sparse annotations
+                annotationBuffer = new String[globalKeyIndexMap.size()];
+                GeneralAnnotation annos = pos.getAnnotation();
+
+                //Add in chr, pos and strand values
+                int chromIndex = pos.getChromosome().getChromosomeNumber();
+                int posIndex = pos.getPosition();
+                String strandString = pos.getStrandStr();
+                fileOut.write(chromIndex+"\t"+posIndex+"\t"+strandString+"\t");
+
+                Set<String> annoKeys = annos.getAnnotationKeys();
+                SetMultimap<String, String> annoMap = annos.getAnnotationAsMap();
+                for(String key: annoKeys) {
+                    //lookup the key index
+                    int keyIndex = globalKeyIndexMap.get(key);
+                    annotationBuffer[keyIndex] = annoMap.get(key).stream().collect(Collectors.joining(":"));
+                }
+                fileOut.write(Arrays.stream(annotationBuffer).collect(Collectors.joining("\t")));
+                fileOut.newLine();
+            }
+
+            fileOut.close();
+        }
+        catch(IOException e) {
+            System.out.println(e);
+        }
     }
 
 }

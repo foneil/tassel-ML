@@ -9,9 +9,9 @@
             "position":157104,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/C”,
-		“NumReads”:123,
-		“Score”:1.2
+                "VARIANT":"A/C",
+		"NumReads":123,
+		"Score":1.2
             }
         },
         {
@@ -22,9 +22,9 @@
             "position":1947984,
             "strand":"+",
             "anno":{
-                "VARIANT”:”C/G”,
-		“NumReads”:120,
-		“Score”:1.1
+                "VARIANT":"C/G",
+		"NumReads":120,
+		"Score":1.1
             }
         },
         {
@@ -35,9 +35,9 @@
             "position":2914066,
             "strand":"+",
             "anno":{
-                "VARIANT”:”G/T”,
-		“NumReads”:120,
-		“Score”:”Alpha”
+                "VARIANT":"G/T",
+		"NumReads":120,
+		"Score":"Alpha"
             }
         },
         {
@@ -48,9 +48,9 @@
             "position":2914171,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/T”,
-		“NumReads”:121,
-		“Score”:1.15
+                "VARIANT":"A/T",
+		"NumReads":121,
+		"Score":1.15
             }
         },
         {
@@ -61,9 +61,9 @@
             "position":2915078,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/G”,
-		“NumReads”:120,
-		“Score”:1.2
+                "VARIANT":"A/G",
+		"NumReads":120,
+		"Score":1.2
             }
         },
         {
@@ -74,9 +74,9 @@
             "position":2915242,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/T”,
-		“NumReads”:125,
-		“Score”:1.0
+                "VARIANT":"A/T",
+		"NumReads":125,
+		"Score":1.0
             }
         },
         {
@@ -87,9 +87,9 @@
             "position":2973508,
             "strand":"+",
             "anno":{
-                "VARIANT”:”C/G”,
-		“NumReads”:120,
-		“Score”:1.1
+                "VARIANT":"C/G",
+		"NumReads":120,
+		"Score":1.1
             }
         },
         {
@@ -100,9 +100,9 @@
             "position":3205252,
             "strand":"+",
             "anno":{
-                "VARIANT”:”A/T”,
-		“NumReads”:121,
-		“Score”:1.2
+                "VARIANT":"A/T",
+		"NumReads":121,
+		"Score":1.2
             }
         },
         {
@@ -113,9 +113,9 @@
             "position":3205262,
             "strand":"+",
             "anno":{
-                "VARIANT”:”C/G”,
-		“NumReads”:122,
-		“Score”:1.1
+                "VARIANT":"C/G",
+		"NumReads":122,
+		"Score":1.1
             }
         },
         {
@@ -126,9 +126,9 @@
             "position":3206090,
             "strand":"+",
             "anno":{
-                "VARIANT”:”C/T”,
-		“NumReads”:120,
-		“Score”:1.2
+                "VARIANT":"C/T",
+		"NumReads":120,
+		"Score":1.2
             }
         }
     ]
